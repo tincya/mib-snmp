@@ -1,5 +1,6 @@
 from pysnmp.hlapi import *
 
+# NCVN
 errorIndication, errorStatus, errorIndex, varBinds = next(
   getCmd(
     SnmpEngine(),
