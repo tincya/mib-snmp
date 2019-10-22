@@ -2,13 +2,11 @@
 
 MIB-SNMP Project  
 
-# INSTALL
-
-1. Install require
+### Install require
 
 $ pip install -r require/require.txt
 
 
-# RUN WEB APP
+### RUN WEB APP
 
 $ python3 manage.py runserver 8080
