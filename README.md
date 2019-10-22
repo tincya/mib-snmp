@@ -1,9 +1,6 @@
 # MIB-SNMP
-MIB-SNMP Project
-.
 
---------------
---------------
+MIB-SNMP Project  
 
 #INSTALL
 
