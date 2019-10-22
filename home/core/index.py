@@ -73,3 +73,6 @@ try:
         print(' = '.join([x.prettyPrint() for x in varBind]))
 except KeyboardInterrupt:
   print('done.')
+
+def main():
+  pass
