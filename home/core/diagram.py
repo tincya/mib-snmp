@@ -71,13 +71,13 @@ def mod_entry(natlas_obj, argv):
         print('Invalid arguments.')
         return 99
 
-    print('     Config file: %s' % natlas_obj.config_file)
-    print('     Output file: %s' % opt_output)
-    print('Out Catalog file: %s' % opt_catalog)
-    print('       Root node: %s' % opt_root_ip)
-    print('  Discover depth: %s' % opt_depth)
-    print('   Diagram title: %s' % opt_title)
-    print()
+    # print('     Config file: %s' % natlas_obj.config_file)
+    # print('     Output file: %s' % opt_output)
+    # print('Out Catalog file: %s' % opt_catalog)
+    # print('       Root node: %s' % opt_root_ip)
+    # print('  Discover depth: %s' % opt_depth)
+    # print('   Diagram title: %s' % opt_title)
+    # print()
 
     # start discovery
     natlas_obj.set_discover_maxdepth(opt_depth)

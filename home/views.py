@@ -21,4 +21,10 @@ def profile(req):
   }
   return JsonResponse(data)
 
+from .core.nasgram import exec_diagram
+def snmp(req):
+  argvs = ['-r', 'demo.snmplabs.com', '-o', 'network.svg']
+  data=exec_diagram(argvs)
+  print(data)
+  return JsonResponse(data, safe=False)
 # python3 natlas-cli.py diagram -r demo.snmplabs.com -o .\network.svg

@@ -1,10 +1,12 @@
-from diagram import mod_entry
+from .diagram import mod_entry
+# from diagram import mod_entry
 import natlas
 
 # Argvs
 argvs = ['-r', 'demo.snmplabs.com', '-o', 'network.svg']
 
-DEFAULT_OPT_CONF    = './natlas_lib/natlas.conf'
+DEFAULT_OPT_CONF    = './home/natlas.conf'
+# DEFAULT_OPT_CONF    = './natlas_lib/natlas.conf'
 def argv_get_conf(argv):
     opt_conf = DEFAULT_OPT_CONF
     for i in range(0, len(argv)):
@@ -35,7 +37,17 @@ def exec_diagram(argvs):
         return 0
 
     modret = mod_entry(natlas_obj, argv)
+    print('---------------------------')
     if modret!=99:
-        print(modret)
+        topo={
+            'root': {
+                'ip':modret.root_node.ip[0],'name':modret.root_node.name
+            },
+            'nodes':[{'ip':it.ip[0],'name':it.name} for it in modret.nodes]
+        }
+        # import json
+        # return json.dumps(topo)
+        return topo
 
-exec_diagram(argvs)
+if __name__ == '__main__':
+    exec_diagram(argvs)

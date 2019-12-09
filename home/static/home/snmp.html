@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SNMP</title>
+    <script src="https://visjs.github.io/vis-network/standalone/umd/vis-network.min.js"></script>
+</head>
+<body>
+
+<style>
+#mynetwork {
+  width: 100%;
+  height: 600px;
+  border: 1px solid lightgray;
+  background-color: #e8e8e8;
+}
+</style>
+<div id="mynetwork"></div>
+<script>
+
+//modret.root_node.ip
+//modret.root_node.name
+//modret.nodes[0].ip
+//modret.nodes[0].name
+var nodes = null;
+var edges = null;
+var network = null;
+var DIR = 'https://visjs.github.io/vis-network/examples/network/img/refresh-cl/';
+var SDIR = '/static/home/images/router.png';
+var imtopo = {
+    'netpipe':'Network-Pipe-icon.png',
+    'pc':'Hardware-My-Computer-3-icon.png',
+    'printer':'Hardware-Printer-Blue-icon.png',
+    'laptop':'Hardware-Laptop-1-icon.png',
+    'firewall':'System-Firewall-2-icon.png',
+    'pda':'Hardware-My-PDA-02-icon.png',
+    'netdrive':'Network-Drive-icon.png',
+    'fax':'Hardware-Fax-icon.png',
+    'phone':'Hardware-My-Phone-Picture-icon.png',
+    'mobile':'Hardware-Mobile-Phone-icon.png'
+};
+var EDGE_LENGTH_MAIN = 150;
+var EDGE_LENGTH_SUB = 50;
+
+function draw2() {
+  //http://localhost:8000/snmp/
+  nodes = [
+      {id: 1, label: 'Main\nA: abc\nB: 123', image: DIR + imtopo['pc'], shape: 'image'},
+      {id: 2, label: 'Office', image: DIR + imtopo['laptop'], shape: 'image'},
+      {id: 3, label: 'Wireless', image: SDIR, shape: 'image'}
+  ];
+  edges = [
+      {from: 1, to: 2, length: EDGE_LENGTH_MAIN},
+      {from: 1, to: 3, length: EDGE_LENGTH_MAIN}
+  ];
+
+  var data = {nodes: nodes,edges: edges};
+  var options = {};
+  network = new vis.Network(document.getElementById('mynetwork'), data, options);
+}
+window.onload=draw2();
+</script>
+
+</body>
+</html>
