@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('app/', views.profile, name='home'),
     path('snmp/', views.snmp, name='snmp'),
+    path('pcap/', views.pcap, name='pcap'),
 ]

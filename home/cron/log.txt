@@ -1,0 +1,4 @@
+Running: /media/tincya/DATA/space-py/project-19/mib-snmp/home/cron
+-----In: 2019-12-15 00:58:01.610090
+Running: /media/tincya/DATA/space-py/project-19/mib-snmp/home/cron
+-----In: 2019-12-15 00:59:01.871560
