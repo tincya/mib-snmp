@@ -6,4 +6,5 @@ urlpatterns = [
     path('app/', views.profile, name='home'),
     path('snmp/', views.snmp, name='snmp'),
     path('pcap/', views.pcap, name='pcap'),
+    path('register/', views.register, name='register'),
 ]

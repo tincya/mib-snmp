@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse, JsonResponse
-from rest_framework import viewsets
 from django import forms
 from django.conf import settings
+from django.contrib.auth.models import User
 
 # from .core import index
 # import core.index
@@ -46,3 +46,24 @@ def pcap(request):
   else:
     form = UploadFileForm()
     return render(request, 'home/upload.html', {'form': form})
+
+
+class UserForm(forms.Form):
+  user = forms.CharField(max_length=100, required=True)
+  email = forms.EmailField(max_length=100)
+  password = forms.CharField(max_length=100, required=True)
+  re_password = forms.CharField(max_length=100, required=True)
+
+def register(req):
+  if req.method == 'POST':
+    uf = UserForm(req.POST)
+    if uf.is_valid() and uf.cleaned_data['password']==uf.cleaned_data['re_password']:
+      user = uf.cleaned_data['user']
+      email = uf.cleaned_data['email']
+      password = uf.cleaned_data['password']
+      User.objects.create_user(user, email, password)
+  else:
+    uf = UserForm(req.POST)
+  return render(req, 'home/register.html', {'form':uf})
+def login(req):
+  return 0
