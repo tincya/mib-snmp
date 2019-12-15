@@ -38,7 +38,7 @@ body {
   border-top-right-radius: 0;
 }
 ul.errorlist {
-  padding:0!important;
+  padding:0 0 0 5px!important;
 }
 ul.errorlist>li {
   display:block!important;

@@ -1,38 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    {% load static %}
-    {% load add_attr %}
-    <meta charset="UTF-8">
-    <title>SignUp</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-            crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="{% static "home/css/register.css" %}">
-</head>
-<body>
+{% extends 'home/relog.html' %}
+{% load add_attr %}
+{% block title %}LOGIN{% endblock %}
 
-
+{% block container %}
+{% if success %}
+    <div class="container">
+        <h2 class="form-signin-heading text-center">LOGIN SUCCESS!</h2>
+    </div>
+{% else %}
 <div class="container">
-
-    <form class="form-signin">
+    <form action="" method="POST" class="form-signin">
+        {% csrf_token %}
         <h2 class="form-signin-heading">Please sign in</h2>
-        <label for="inputEmail" class="sr-only">Email address</label>
-        <input type="email" id="inputEmail" class="form-control" placeholder="Email address" required="" autofocus="">
-        <label for="inputPassword" class="sr-only">Password</label>
-        <input type="password" id="inputPassword" class="form-control" placeholder="Password" required="">
-        <div class="checkbox">
-            <label>
-                <input type="checkbox" value="remember-me"> Remember me
-            </label>
+        <div class="text-danger form-group">{{ errors }}</div>
+        <div class="form-group">
+            <div>
+                <label for="{{ form.user_name.id_for_label }}" class="sr-only">User:</label>
+                {{ form.user_name | add_attr:"class:form-control,placeholder:User name" }}
+                {{ form.user_name.errors }}
+            </div>
+            <div>
+                <label for="{{ form.password.id_for_label }}" class="sr-only">Password:</label>
+                {{ form.password | add_attr:"class:form-control,placeholder:Password" }}
+                {{ form.password.errors }}
+            </div>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <div class="checkbox">
+            <label>{{ form.remember }} Remember me</label>
+        </div>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
     </form>
-
 </div>
-
-</body>
-</html>
+{% endif %}
+{% endblock %}

@@ -7,4 +7,5 @@ urlpatterns = [
     path('snmp/', views.snmp, name='snmp'),
     path('pcap/', views.pcap, name='pcap'),
     path('register/', views.register, name='register'),
+    path('login/', views.login, name='login'),
 ]

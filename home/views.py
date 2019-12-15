@@ -3,6 +3,7 @@ from django.http import HttpResponse, JsonResponse
 from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.auth import authenticate
 
 # from .core import index
 # import core.index
@@ -35,6 +36,12 @@ class UploadFileForm(forms.Form):
     file2up = forms.FileField()
 
 def pcap(request):
+  for file in request.FILES:
+    with open(settings.BASE_DIR + '/upload/' + file.name, 'wb+') as destination:
+      for chunk in file.chunks():
+        destination.write(chunk)
+  return HttpResponse("OK!")
+
   if request.method == 'POST' or request.method == 'PUT':
     if request.method == 'POST':
       form = UploadFileForm(request.POST, request.FILES)
@@ -51,26 +58,43 @@ def pcap(request):
     return render(request, 'home/upload.html', {'form': form})
 
 
-class UserForm(forms.Form):
+class LoginForm(forms.Form):
   user_name = forms.CharField(max_length=100, label='user_name', required=True)
-  email = forms.EmailField(max_length=100, label='email')
   password = forms.CharField(widget=forms.PasswordInput, max_length=100, label='password', required=True)
+  remember = forms.BooleanField(label='remember', required=False)
+
+class RegisterForm(LoginForm):
+  email = forms.EmailField(max_length=100, label='email')
   re_password = forms.CharField(widget=forms.PasswordInput, max_length=100, label='re_password', required=True)
 
 def register(req):
   if req.method == 'POST':
-    uf = UserForm(req.POST)
+    uf = RegisterForm(req.POST)
     if uf.is_valid() and uf.cleaned_data['password']==uf.cleaned_data['re_password']:
       user_name = uf.cleaned_data['user_name']
       email = uf.cleaned_data['email']
       password = uf.cleaned_data['password']
       try:
-        User.objects.create_user(user_name, email, password)
+        user = User.objects.create_user(user_name, email, password)
       except:
         return render(req, 'home/register.html', {'form':uf, 'errors':'Register Fail!'})
-      return render(req, 'home/register.html', {'form':uf, 'registered':True})
+      return render(req, 'home/register.html', {'user':user, 'success':True})
   else:
-    uf = UserForm()
+    uf = RegisterForm()
   return render(req, 'home/register.html', {'form':uf})
 def login(req):
-  return 0
+  if req.method == 'POST':
+    uf = LoginForm(req.POST)
+    if uf.is_valid():
+      user_name = uf.cleaned_data['user_name']
+      password = uf.cleaned_data['password']
+      try:
+        user = authenticate(username=user_name, password=password)
+        if user is not None:
+          return render(req, 'home/login.html', {'user': user, 'success': True})
+      except:
+        return render(req, 'home/login.html', {'form':uf, 'errors':'Login Fail!'})
+      return render(req, 'home/login.html', {'form': uf, 'errors': 'Login Fail!'})
+  else:
+    uf = LoginForm()
+  return render(req, 'home/login.html', {'form':uf})
