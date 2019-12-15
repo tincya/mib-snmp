@@ -9,3 +9,4 @@ dist
 IDEAS
 modules/test.py
 .idea/
+__pycache__/
