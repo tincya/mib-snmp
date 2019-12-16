@@ -1,4 +1,4 @@
-{% extends 'home/relog.html' %}
+{% extends 'home/base.html' %}
 {% load add_attr %}
 {% block title %}LOGIN{% endblock %}
 
@@ -28,7 +28,7 @@
         <div class="checkbox">
             <label>{{ form.remember }} Remember me</label>
         </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign up</button>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
     </form>
 </div>
 {% endif %}
