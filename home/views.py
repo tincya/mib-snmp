@@ -4,6 +4,7 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
+from django.views.decorators.csrf import csrf_exempt
 
 # from .core import index
 # import core.index
@@ -35,27 +36,30 @@ def snmp(req):
 class UploadFileForm(forms.Form):
     file2up = forms.FileField()
 
+@csrf_exempt
 def pcap(request):
-  for file in request.FILES:
-    with open(settings.BASE_DIR + '/upload/' + file.name, 'wb+') as destination:
-      for chunk in file.chunks():
-        destination.write(chunk)
-  return HttpResponse("OK!")
-
   if request.method == 'POST' or request.method == 'PUT':
-    if request.method == 'POST':
-      form = UploadFileForm(request.POST, request.FILES)
-    else:
-      form = UploadFileForm(request.PUT, request.FILES)
-    if form.is_valid():
-      with open(settings.BASE_DIR+'/upload/'+request.FILES['file2up'].name, 'wb+') as destination:
-        for chunk in request.FILES['file2up'].chunks():
+    for file in request.FILES:
+      with open(settings.BASE_DIR + '/upload/' + request.FILES[file].name, 'wb+') as destination:
+        for chunk in request.FILES[file].chunks():
           destination.write(chunk)
-      return HttpResponse("OK!")
-    return HttpResponse("FAIL!")
-  else:
-    form = UploadFileForm()
-    return render(request, 'home/upload.html', {'form': form})
+    return render(request, 'home/upload.html')
+  return render(request, 'home/upload.html', {'errors':'GET!'})
+
+  # if request.method == 'POST' or request.method == 'PUT':
+  #   if request.method == 'POST':
+  #     form = UploadFileForm(request.POST, request.FILES)
+  #   else:
+  #     form = UploadFileForm(request.PUT, request.FILES)
+  #   if form.is_valid():
+  #     with open(settings.BASE_DIR+'/upload/'+request.FILES['file2up'].name, 'wb+') as destination:
+  #       for chunk in request.FILES['file2up'].chunks():
+  #         destination.write(chunk)
+  #     return HttpResponse("OK!")
+  #   return HttpResponse("FAIL!")
+  # else:
+  #   form = UploadFileForm()
+  #   return render(request, 'home/upload.html', {'form': form})
 
 
 class LoginForm(forms.Form):
