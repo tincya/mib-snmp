@@ -7,7 +7,7 @@
     <title>{% block title %}Relog{% endblock %}</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
@@ -18,27 +18,55 @@
 <body>
 
 {% block navbar %}
-<nav class="navbar navbar-inverse">
-    <div class="container-fluid">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="#">SNMP-NC</a>
+<nav class="nav" style="z-index: 3;">
+    <div class="container">
+            <div class="logo">
+                <a href="/">SNMP-NC</a>
+            </div>
+            <div id="mainListDiv" class="main_list">
+                <ul class="navlinks">
+                    <li><a href="{% url 'pcap' %}">Upload</a></li>
+                    <li><a href="{% url 'users' %}">Users</a></li>
+
+                    {% if user_data %}
+                        <li>
+                            <div class="dropdown" id="dropdown-user">
+                              <a class="dropdown-toggle" data-toggle="dropdown">
+                                  <span class="glyphicon glyphicon-user"></span> Hi, {{ user_data.username | default_if_none:'Noa' }}
+                              </a>
+                              <ul class="dropdown-menu">
+                                <li><a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                              </ul>
+                            </div>
+                        </li>
+                    {% else %}
+                        <li><a href="{% url 'user_login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
+                        <li><a href="{% url 'user_register' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+            <span class="navTrigger"><i></i><i></i><i></i></span>
         </div>
-        <ul class="nav navbar-nav">
-            <li class="active"><a href="/">Home</a></li>
-            <li><a href="{% url 'pcap' %}">PCAP</a></li>
-            <li><a href="{% url 'home' %}">App</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            {% if user_data %}
-                <li><a href="#"><span class="glyphicon glyphicon-user"></span> Hi, {{ user_data.username | default_if_none:'Noa' }}</a></li>
-                <li><a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-            {% else %}
-                <li><a href="{% url 'user_login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
-                <li><a href="{% url 'user_register' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>
-            {% endif %}
-        </ul>
-    </div>
 </nav>
+
+{% block home %}
+<section class="home" style="background-image: url({% static "home/images/techno1.jpg" %})"></section>
+{% endblock %}
+
+<link rel="stylesheet" href="{% static "home/css/beauty-menu.css" %}">
+<script>
+$('.navTrigger').click(function () {
+    $(this).toggleClass('active');
+    $("#mainListDiv").toggleClass("show_list");
+    $("#mainListDiv").fadeIn();
+
+});
+$(window).scroll(function() {
+    if ($(document).scrollTop() > 50) { $('.nav').addClass('affix'); }
+    else { $('.nav').removeClass('affix'); }
+});
+</script>
+
 {% endblock %}
 
 {% block container %}

@@ -1,0 +1,52 @@
+{% extends 'home/base.html' %}
+{% load add_attr %}
+{% block title %}HOME{% endblock %}
+{% block style %}{% endblock %}
+
+{% block home %}
+    <section class="minhome" style="background-color: #000;"></section>
+{% endblock %}
+{% block container %}
+<form action="" method="POST">
+{% csrf_token %}
+<div class="container">
+    {% if message %}
+    <div class="row">
+        <div class="col-xs-12">
+            <div class="alert alert-info alert-dismissible" role="alert">
+              <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <span>{{ message }}</span>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    <h1 class="text-center form-group">ALL USERS</h1>
+    <table class="table table-bordered table-responsive">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>User name</th>
+            <th>Date joined</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for u in users %}
+        <tr>
+            <td>{{ u.id }}</td>
+            <td>{{ u.username }}</td>
+            <td>{{ u.date_joined }}</td>
+            <td>
+            {% if  user_data.is_superuser %}
+                <button class="btn btn-danger" name="delete_user" value="{{ u.id }}">
+                    <i class="glyphicon glyphicon-trash"></i>
+                </button>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+</form>
+{% endblock %}

@@ -8,6 +8,9 @@ from django.views.decorators.csrf import csrf_exempt
 
 # from .core import index
 # import core.index
+import os
+
+UPLOAD_DIR = './upload'
 
 def index(req):
   ctx = {}
@@ -36,34 +39,25 @@ def snmp(req):
   return JsonResponse(data, safe=False)
 # python3 natlas-cli.py diagram -r demo.snmplabs.com -o .\network.svg
 
-class UploadFileForm(forms.Form):
-    file2up = forms.FileField()
-
 @csrf_exempt
-def pcap(request):
-  if request.method == 'POST' or request.method == 'PUT':
-    for file in request.FILES:
-      with open(settings.BASE_DIR + '/upload/' + request.FILES[file].name, 'wb+') as destination:
-        for chunk in request.FILES[file].chunks():
-          destination.write(chunk)
-    return render(request, 'home/upload.html', {'message':'OK!'})
-  return render(request, 'home/upload.html', {'message':'GET!'})
-
-  # if request.method == 'POST' or request.method == 'PUT':
-  #   if request.method == 'POST':
-  #     form = UploadFileForm(request.POST, request.FILES)
-  #   else:
-  #     form = UploadFileForm(request.PUT, request.FILES)
-  #   if form.is_valid():
-  #     with open(settings.BASE_DIR+'/upload/'+request.FILES['file2up'].name, 'wb+') as destination:
-  #       for chunk in request.FILES['file2up'].chunks():
-  #         destination.write(chunk)
-  #     return HttpResponse("OK!")
-  #   return HttpResponse("FAIL!")
-  # else:
-  #   form = UploadFileForm()
-  #   return render(request, 'home/upload.html', {'form': form})
-
+def pcap(req):
+  ctx={}
+  ctx['user_data']=auth_ctx(req)
+  if ctx['user_data']:
+    if req.method == 'POST' and 'delete_file' in req.POST and ctx['user_data']['is_superuser']:
+      try:
+        ctx['message'] = 'Delete "' + req.POST['delete_file'] + '" Success!'
+        os.remove(UPLOAD_DIR+'/'+req.POST['delete_file'])
+      except:
+        ctx['message'] = 'Delete error!!!'
+    elif req.method == 'POST' or req.method == 'PUT':
+      for file in req.FILES:
+        with open(settings.BASE_DIR + '/upload/' + req.FILES[file].name, 'wb+') as destination:
+          for chunk in req.FILES[file].chunks():
+            destination.write(chunk)
+        ctx['message']='Upload "' + req.FILES[file].name + '" Success!'
+  ctx['list_files']=list_files()
+  return render(req, 'home/upload-base.html', ctx)
 
 class LoginForm(forms.Form):
   user_name = forms.CharField(max_length=100, label='user_name', required=True)
@@ -113,10 +107,36 @@ def user_logout(req):
   logout(req)
   return redirect('user_login')
 
+def allusers(req):
+  ctx={}
+  ctx['user_data']=auth_ctx(req)
+  if ctx['user_data']:
+    if req.method == 'POST' and 'delete_user' in req.POST and ctx['user_data']['is_superuser']:
+      duser = User.objects.get(pk=req.POST['delete_user'])
+      if not duser.is_superuser:
+        ctx['message']='Delete user "'+duser.username+'" success!'
+        duser.delete()
+      else:
+        ctx['message'] = 'Delete user "' + duser.username + '" error!'
+    users = User.objects.filter(is_superuser=False)
+    ctx['users'] = users
+  return render(req, 'home/all-users.html', ctx)
+
 def auth_ctx(req):
   if req.user.is_authenticated:
     return {
       'username': req.user.username,
       'email': req.user.email,
+      'is_superuser': req.user.is_superuser,
     }
   return None
+
+def list_files():
+  pfs=[]
+  for r, d, f in os.walk(UPLOAD_DIR):
+    for pfile in f:
+      if pfile.endswith('.pcap'):
+        print(pfile)
+        pfs.append(pfile)
+    break
+  return pfs
