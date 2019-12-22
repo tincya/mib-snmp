@@ -94,6 +94,9 @@ $(function() {
             <td><a href="{% url 'pcap-info' lf.id %}">{{ lf.file_name }}</a></td>
             <td>{{ lf.pub_date }}</td>
             <td>
+            <a class="btn btn-info" href="{% url 'pcap-data' lf.id %}">
+                <i class="glyphicon glyphicon-export"></i>
+            </a>
             {% if  user_data.is_superuser %}
                 <button class="btn btn-danger" name="delete_file" value="{{ lf.id }}">
                     <i class="glyphicon glyphicon-trash"></i>
@@ -102,8 +105,17 @@ $(function() {
             </td>
         </tr>
         {% empty %}
-            <td colspan="3" class="text-center"><span>Empty!!!</span></td>
+            <td colspan="4" class="text-center"><span>Empty!!!</span></td>
         {% endfor %}
+        {% if list_files %}
+        <tr>
+            <td colspan="4" class="text-center">
+                <a class="btn btn-info" href="{% url 'pcap-all' %}">
+                    Show All
+                </a>
+            </td>
+        </tr>
+        {% endif %}
         </tbody>
     </table>
         </div>

@@ -9,6 +9,8 @@ from django.views.decorators.csrf import csrf_exempt
 # from .core import index
 # import core.index
 import os
+import json
+import numpy as np
 from django.utils import timezone
 from home.models import PCAP
 from home.utils.pcap_analytics import toJSON
@@ -83,6 +85,50 @@ def pcap(req):
   ctx['list_files'] = PCAP.objects.all()
   return render(req, 'home/upload-base.html', ctx)
 
+def pcap_data(req, pk):
+  try:
+    pcapfile = PCAP.objects.get(pk=pk)
+    return HttpResponse(pcapfile.json_data)
+  except (KeyError, PCAP.DoesNotExist):
+    pass
+  return HttpResponse("{'error':'???'}")
+
+def pcap_all(req):
+  ctx = {}
+  ctx['user_data'] = auth_ctx(req)
+  if not ctx['user_data']:
+    return redirect('user_login')
+  pcapfile={
+    'dnsCount': {},
+    'timeSeries': {},
+    'portTraffd': {},
+    'portTraffs': {},
+    'ipCountd': {},
+    'ipCounts': {}
+  }
+  pcapfiles = PCAP.objects.all()
+  for pcc in pcapfiles:
+    jdt = json.loads(pcc.json_data)
+    for dcs in jdt:
+      for keyv in jdt[dcs]:
+        if keyv in pcapfile[dcs]:
+          if type(jdt[dcs][keyv])==type({}) and 'count' in pcapfile[dcs][keyv]:
+            pcapfile[dcs][keyv]['count'] += jdt[dcs][keyv]['count']
+            pcapfile[dcs][keyv]['ip'] += jdt[dcs][keyv]['ip']
+          else:
+            pcapfile[dcs][keyv]+=jdt[dcs][keyv]
+        else:
+          if type(jdt[dcs][keyv])==type({}) and 'count' in jdt[dcs][keyv]:
+            pcapfile[dcs][keyv]={'count':jdt[dcs][keyv]['count'],'ip':jdt[dcs][keyv]['ip']}
+          else:
+            pcapfile[dcs][keyv] = jdt[dcs][keyv]
+  ctx['pcapfile']={
+    'id':0,
+    'file_name':'All',
+    'json_data':pcapfile
+  }
+  return render(req, 'home/allfile-info.html', ctx)
+
 def pcap_info(req, pk):
   ctx = {}
   ctx['user_data'] = auth_ctx(req)
@@ -94,7 +140,6 @@ def pcap_info(req, pk):
   except (KeyError, PCAP.DoesNotExist):
     pass
   ctx['pcapfile']=pcapfile
-  ctx['user_data'] = auth_ctx(req)
   return render(req, 'home/file-info.html', ctx)
 
 class LoginForm(forms.Form):
