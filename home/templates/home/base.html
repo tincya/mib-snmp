@@ -25,20 +25,19 @@
             </div>
             <div id="mainListDiv" class="main_list">
                 <ul class="navlinks">
-                    <li><a href="{% url 'pcap' %}">Upload</a></li>
-                    <li><a href="{% url 'users' %}">Users</a></li>
-
                     {% if user_data %}
-                        <li>
-                            <div class="dropdown" id="dropdown-user">
-                              <a class="dropdown-toggle" data-toggle="dropdown">
-                                  <span class="glyphicon glyphicon-user"></span> Hi, {{ user_data.username | default_if_none:'Noa' }}
-                              </a>
-                              <ul class="dropdown-menu">
-                                <li><a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
-                              </ul>
-                            </div>
-                        </li>
+                    <li><a href="{% url 'pcap' %}">Statistics</a></li>
+                    <li><a href="{% url 'users' %}">Users</a></li>
+                    <li>
+                        <div class="dropdown" id="dropdown-user">
+                          <a class="dropdown-toggle" data-toggle="dropdown">
+                              <span class="glyphicon glyphicon-user"></span> Hi, {{ user_data.username | default_if_none:'Noa' }}
+                          </a>
+                          <ul class="dropdown-menu">
+                            <li><a href="{% url 'user_logout' %}"><span class="glyphicon glyphicon-log-out"></span> Logout</a></li>
+                          </ul>
+                        </div>
+                    </li>
                     {% else %}
                         <li><a href="{% url 'user_login' %}"><span class="glyphicon glyphicon-log-in"></span> Login</a></li>
                         <li><a href="{% url 'user_register' %}"><span class="glyphicon glyphicon-user"></span> Sign Up</a></li>

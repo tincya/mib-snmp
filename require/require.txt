@@ -1,3 +1,8 @@
 pysnmp==4.4.12
 Django==2.2.6
 python-crontab==2.4.0
+scapy==2.4.3
+scapy-http==1.8.2
+prettytable==0.7.2
+decorator==4.4.1
+networkx==2.4

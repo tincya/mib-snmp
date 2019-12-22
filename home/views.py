@@ -11,9 +11,11 @@ from django.views.decorators.csrf import csrf_exempt
 import os
 from django.utils import timezone
 from home.models import PCAP
+from home.utils.pcap_analytics import toJSON
+from shutil import copyfile
 
 UPLOAD_DIR = './upload'
-
+UPLOAD_TMP_DIR= './upload_tmp'
 
 def index(req):
   ctx = {}
@@ -54,13 +56,15 @@ def pcap(req):
   ctx = {}
   ctx['user_data'] = auth_ctx(req)
   if ctx['user_data']:
+    syncdb()
     if req.method == 'POST':
       if 'delete_file' in req.POST and ctx['user_data']['is_superuser']:
         try:
           fid = int(req.POST['delete_file'])
           pcf = PCAP.objects.get(pk=fid)
-          os.remove(UPLOAD_DIR + '/' + pcf.file_name)
+          file_name = pcf.file_name
           pcf.delete()
+          os.remove(UPLOAD_DIR + '/' + file_name)
           ctx['message'] = 'Delete "' + req.POST['delete_file'] + '" Success!'
         except:
           ctx['message'] = 'Delete error!!!'
@@ -74,16 +78,23 @@ def pcap(req):
             for chunk in req.FILES[file].chunks():
               destination.write(chunk)
           ctx['message'] = 'Upload "' + req.FILES[file].name + '" Success!'
+  else:
+    return redirect('user_login')
   ctx['list_files'] = PCAP.objects.all()
   return render(req, 'home/upload-base.html', ctx)
 
 def pcap_info(req, pk):
+  ctx = {}
+  ctx['user_data'] = auth_ctx(req)
+  if not ctx['user_data']:
+    return redirect('user_login')
   pcapfile={}
   try:
     pcapfile = PCAP.objects.get(pk=pk)
   except (KeyError, PCAP.DoesNotExist):
     pass
-  ctx = {'pcapfile':pcapfile}
+  ctx['pcapfile']=pcapfile
+  ctx['user_data'] = auth_ctx(req)
   return render(req, 'home/file-info.html', ctx)
 
 class LoginForm(forms.Form):
@@ -153,6 +164,8 @@ def allusers(req):
         ctx['message'] = 'Delete user "' + duser.username + '" error!'
     users = User.objects.filter(is_superuser=False)
     ctx['users'] = users
+  else:
+    return redirect('user_login')
   return render(req, 'home/all-users.html', ctx)
 
 
@@ -167,14 +180,24 @@ def auth_ctx(req):
 
 
 def syncdb():
-  fpc = []
   for r, d, f in os.walk(UPLOAD_DIR):
     break
   for pfile in f:
     if pfile.endswith('.pcap'):
-      fpc.append(pfile)
-      pc = PCAP.objects.filter(file_name__exact=pfile)
+      try:
+        pc = PCAP.objects.get(file_name=pfile)
+      except (KeyError, PCAP.DoesNotExist):
+        pc=None
+      pjs = toJSON(file_name=UPLOAD_DIR + '/' + pfile, limit=-1)
       if not pc:
-        newpc = PCAP(file_name=pfile, pub_date=timezone.now())
-        newpc.save()
-  return fpc
+        pc = PCAP(file_name=pfile, pub_date=timezone.now(), json_data=pjs)
+      else:
+        pc.json_data=pjs
+      pc.save()
+      try:
+        copyfile(UPLOAD_DIR + '/' + pfile, UPLOAD_TMP_DIR + '/' + pfile)
+        os.remove(UPLOAD_DIR + '/' + pfile)
+      except:
+        return 0
+
+  return 1

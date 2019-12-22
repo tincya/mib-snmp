@@ -11,3 +11,4 @@ modules/test.py
 .idea/
 __pycache__/
 upload/
+upload_tmp/
