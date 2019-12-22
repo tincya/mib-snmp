@@ -9,10 +9,16 @@
 {% block container %}
 <div class="row container">
     <div class="col-xs-12">
-        <h2 class="h2 text-center">What is this ?</h2>
+        <h2 class="h2 text-center">File Info ?</h2>
+        {% if pcapfile %}
         <p style="text-indent: 20px;">
-            This is my base line.
+            File with id : {{ pcapfile.id }}, name: {{ pcapfile.file_name }}
         </p>
+        {% else %}
+        <p style="text-indent: 20px;">
+            File not exists.
+        </p>
+        {% endif %}
     </div>
 </div>
 

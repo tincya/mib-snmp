@@ -6,6 +6,7 @@ urlpatterns = [
     path('app/', views.profile, name='home'),
     path('snmp/', views.snmp, name='snmp'),
     path('upload/', views.pcap, name='pcap'),
+    path('pcap-info/<int:pk>', views.pcap_info, name='pcap-info'),
     path('users/', views.allusers, name='users'),
     path('register/', views.user_register, name='user_register'),
     path('login/', views.user_login, name='user_login'),
